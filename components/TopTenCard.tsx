@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ContentItem } from '../types';
 
@@ -16,9 +15,9 @@ const TopTenCard: React.FC<TopTenCardProps> = ({ item, rank, onVideoSelect }) =>
     >
       <span 
         className="font-black text-[14rem] absolute z-0 -left-2 top-1/2 -translate-y-1/2 transition-transform duration-500 ease-out group-hover:scale-105"
+        // FIX: Removed the 'textStroke' property as it is not a standard CSS property and causes a TypeScript error. The vendor-prefixed 'WebkitTextStroke' is sufficient.
         style={{
           WebkitTextStroke: '3px #718096',
-          textStroke: '3px #718096',
           color: 'transparent',
           lineHeight: '1',
         }}

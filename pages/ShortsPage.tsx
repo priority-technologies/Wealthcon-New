@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Short from '../components/Short';
@@ -60,7 +59,9 @@ const ShortsPage: React.FC<ShortsPageProps> = ({ onLogout, onNavigate }) => {
                         {shortsData.map((short, index) => (
                             <div
                                 key={short.id}
-                                ref={el => (shortRefs.current[index] = el)}
+                                // FIX: Changed the ref callback from an implicit return `() => value` to an explicit block `{...}`.
+                                // The ref callback should not return a value, which was causing a type error.
+                                ref={el => { shortRefs.current[index] = el; }}
                                 data-short-id={short.id}
                                 className="h-full w-full snap-start flex items-center justify-center relative"
                             >
