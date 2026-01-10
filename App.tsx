@@ -12,7 +12,7 @@ import DrRamsMessagesPage from './pages/DrRamsMessagesPage';
 import AdminsUpdatePage from './pages/AdminsUpdatePage';
 import MyListPage from './pages/MyListPage';
 import ProfilePage from './pages/ProfilePage';
-import SettingsPage from './pages/SettingsPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import CategoryPage from './pages/CategoryPage';
 import FAQPage from './pages/FAQPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
@@ -129,9 +129,9 @@ const App: React.FC = () => {
         case 'my-list':
             pageComponent = <MyListPage onLogout={handleLogout} onNoteSelect={handleNoteSelect} onNavigate={handleNavigate} />; break;
         case 'profile':
-            pageComponent = <ProfilePage onLogout={handleLogout} onNavigate={handleNavigate} />; break;
-        case 'settings':
-            pageComponent = <SettingsPage onLogout={handleLogout} onNavigate={handleNavigate} />; break;
+            pageComponent = <ProfilePage onLogout={handleLogout} onNavigate={handleNavigate} onVideoSelect={handleVideoSelect} onNoteSelect={handleNoteSelect} onChartSelect={handleChartSelect} />; break;
+        case 'change-password':
+            pageComponent = <ChangePasswordPage onLogout={handleLogout} onNavigate={handleNavigate} />; break;
         case 'faq':
             pageComponent = <FAQPage onLogout={handleLogout} onNavigate={handleNavigate} />; break;
         case 'privacy':

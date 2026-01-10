@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bell, User, Briefcase, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, User, Briefcase, Lock, LogOut } from 'lucide-react';
 import { Page, ContentItem, NoteItem, ChartItem } from '../types';
 import SearchModal from './SearchModal';
 import NotificationPanel from './NotificationPanel';
@@ -124,7 +124,7 @@ const Navbar: React.FC<NavbarProps> = ({ onLogout, onNavigate, currentPage }) =>
                         <p className="text-sm text-gray-400">doctor@wealthcon.com</p>
                     </div>
                     <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('profile'); setIsProfileOpen(false); }} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 w-full"><Briefcase size={16} /> Profile</a>
-                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('settings'); setIsProfileOpen(false); }} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 w-full"><Settings size={16} /> Settings</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('change-password'); setIsProfileOpen(false); }} className="flex items-center gap-3 px-4 py-2 text-sm text-gray-200 hover:bg-white/10 w-full"><Lock size={16} /> Change Password</a>
                     <button onClick={() => { onLogout(); setIsProfileOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/20"><LogOut size={16}/> Logout</button>
                 </div>
               )}

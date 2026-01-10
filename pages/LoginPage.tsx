@@ -66,11 +66,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         muted
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover z-0"
-        poster="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1920&q=80"
+        poster="https://images.unsplash.com/photo-1554224154-260325c25b67?auto=format&fit=crop&w=1920&q=80"
         style={{ animation: 'kenburns 15s ease-out infinite alternate' }}
       >
-        {/* Using a stock video related to financial data visualization */}
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-stock-market-graphics-with-financial-data-34359-large.mp4" type="video/mp4" />
+        {/* Using a stock video related to financial technology and data processing */}
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-computer-data-processing-34224-large.mp4" type="video/mp4" />
       </video>
       
       {/* Content */}

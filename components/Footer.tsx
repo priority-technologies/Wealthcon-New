@@ -36,14 +36,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenRegistrationModal }) 
                         <p className="mt-4 text-sm">Financial Education Platform for Doctors, by Doctors.</p>
                     </div>
                     
-                    <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div>
-                            <h4 className="font-bold text-white mb-3">Company</h4>
-                            <ul>
-                                <li><a href="#" onClick={handleLinkClick('help')} className="hover:text-white transition-colors">Help Center</a></li>
-                                <li><a href="#" onClick={handleLinkClick('faq')} className="hover:text-white transition-colors mt-2 block">FAQs</a></li>
-                            </ul>
-                        </div>
+                    <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
                          <div>
                             <h4 className="font-bold text-white mb-3">Legal</h4>
                             <ul>

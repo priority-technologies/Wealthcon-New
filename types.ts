@@ -88,4 +88,5 @@ export interface MessageItem {
   timestamp: string; // ISO 8601
 }
 
-export type Page = 'home' | 'videos' | 'shorts' | 'notes' | 'charts' | 'dr-ram' | 'admin-update' | 'my-list' | 'profile' | 'settings' | 'faq' | 'terms' | 'privacy' | 'help';
+// FIX: Added 'settings' to the Page type to allow for the settings page.
+export type Page = 'home' | 'videos' | 'shorts' | 'notes' | 'charts' | 'dr-ram' | 'admin-update' | 'my-list' | 'profile' | 'change-password' | 'faq' | 'terms' | 'privacy' | 'help' | 'settings';
