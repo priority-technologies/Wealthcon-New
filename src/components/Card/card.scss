@@ -1,0 +1,106 @@
+.grid-view {
+    aspect-ratio: 16 / 9;
+
+    .card {
+        padding: 18px;
+        background-color: transparent;
+        border-radius: 14px;
+        gap: 8px;
+
+        figure {
+            border-radius: 14px;
+
+            img {
+                width: 100%;
+                aspect-ratio: 16 / 9;
+                object-fit: cover;
+            }
+        }
+
+        .card-title {
+            padding-top: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+            
+        }
+        .history{
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+        .decs{
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+            // height: 40px;
+        }
+    }
+}
+
+.list-view {
+    .card {
+        padding: 18px;
+        background-color: transparent;
+        border-radius: 14px;
+        .card-horizontal{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            .cardheader{
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                figure {
+                    border-radius: 14px;
+                    width: 100px;
+                    height: 60px;
+                    overflow: hidden;
+                    img {
+                        width: 100% !important;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                }
+                h2{
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;  
+                    overflow: hidden;
+                }
+                .history{
+                    text-wrap: nowrap;
+                    min-width: 100px;
+                }
+            }
+            .cardbody{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+                
+                .decs{
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;  
+                    overflow: hidden;
+                    
+                }
+                
+
+            }
+        }
+        // display: flex;
+        // flex-direction: row;
+        // align-items: center;
+        // gap: 8px;
+    
+        .card-body{
+            display: flex;
+        }
+    }
+}
+

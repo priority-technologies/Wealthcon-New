@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    container_name: wealthcon-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: wealthcon
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - wealthcon-network
+
+  # LocalStack (AWS S3 emulator)
+  localstack:
+    image: localstack/localstack:latest
+    container_name: wealthcon-localstack
+    environment:
+      - SERVICES=s3
+      - DEBUG=0
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    ports:
+      - "4566:4566"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - wealthcon-network
+
+  # Next.js application
+  app:
+    image: node:20-alpine
+    container_name: wealthcon-app
+    working_dir: /app
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - wealthcon-uploads:/app/public/uploads
+      - /app/node_modules
+    networks:
+      - wealthcon-network
+    depends_on:
+      - mongodb
+      - localstack
+    command: npm run dev
+
+volumes:
+  mongodb_data:
+  wealthcon-uploads:
+
+networks:
+  wealthcon-network:
+    driver: bridge

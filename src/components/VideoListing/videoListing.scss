@@ -1,0 +1,21 @@
+.listingCard {
+    figure{
+        width: 120px !important;
+        img{
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+        }
+    }
+    .decs{
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+    }
+    .histroy{
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+    }
+}

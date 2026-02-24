@@ -1,0 +1,65 @@
+.searchBox{
+    border: 1px solid oklch(var(--nc));
+    border-radius: 4px;
+    width: 300px;
+    @media (max-width:1024px) {
+        width: 100%;
+    }
+    .inputField{
+        input{
+            min-height: 50px;
+            color: oklch(var(--inc));
+            background: none;
+            border: none;
+            &:focus-visible{
+                outline: none;
+                box-shadow: none;
+                border: none;
+            }
+            &::placeholder {
+                color: oklch(var(-b3));
+            }
+        }
+    }
+    button, button:hover{
+        background-color: transparent;
+        border: transparent;
+        box-shadow: none;
+        outline: none;
+
+    }
+}
+
+.searchDropdown{
+    width: 100%;
+    min-width: 300px;
+    max-height: 300px;
+    overflow-y: scroll;
+    display: block;
+}
+
+.mobile{
+    .search-wrapper{
+        width: 100%;
+    }
+}
+// List Item Styles
+// .dropdown-content li {
+//     padding: 10px 15px;
+//     border-bottom: 1px solid #eee;
+//     cursor: pointer;
+
+//     &:hover {
+//         background-color: #f1f1f1;
+//     }
+    
+//     &:last-child {
+//         border-bottom: none;
+//     }
+// }
+
+// .dropdown-content p {
+//     padding: 10px 15px;
+//     margin: 0;
+//     color: #333;
+// }

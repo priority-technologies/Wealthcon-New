@@ -1,0 +1,10 @@
+.chat-bubble{
+    border-end-start-radius: 1rem !important;
+    border-top-left-radius: 0px !important;
+    max-width: 99% !important;
+       &::before{
+        transform: rotate(270deg);
+        top: 0;
+        display: none;
+    }
+}

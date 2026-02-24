@@ -1,0 +1,36 @@
+.tableScroll {
+    height: 90%;
+    table{
+        tr{
+            th{
+                background: oklch(var(--b3));
+                font-size: 14px;
+                font-weight: 500;
+                color : oklch(var(--b1));
+                .tableCheckbox {
+                    input{
+                        border-color: oklch(var(--b1));
+                        &:checked{
+                            border-color: oklch(var(--p));
+                        }
+                    }
+                }
+            }
+            td{ 
+                font-size: 14px;
+                font-weight: 500;
+                color : oklch(var(--b1));
+                .inputField > div{
+                    margin-bottom: 0 !important;
+                    width: 150px;
+                }
+                .editUser{
+                    width: 24px;
+                    margin: 0 auto;
+                }
+            }
+        }
+    }
+}
+
+

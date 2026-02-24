@@ -1,0 +1,17 @@
+.login-sidebar{
+    // background-image: url(../../assets/images/docters.jpg);
+    // background-image: url(../../assets/images/docters.png);
+    background-color: oklch(var(--p));
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center bottom; 
+    .auth-layout-logo{
+        margin-top: 150px;
+    }
+    @media (max-width:768px) {
+        height: 50vh !important;
+        .auth-layout-logo{
+            margin-top: 0px;
+        }
+    }
+}

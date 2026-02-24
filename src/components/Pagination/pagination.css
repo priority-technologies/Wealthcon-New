@@ -1,0 +1,51 @@
+.pagination {
+    padding: 0.375rem 0.75rem; /* Padding for each page item */
+    font-size: 1rem; /* Font size */
+    color: #0d6efd; /* Link color */
+    background-color: #fff; /* Background color */
+    border-color: #dee2e6; /* Border color */
+    border-radius: 0.25rem; /* Border radius */
+    display: flex; /* Align items horizontally */
+    padding-left: 0; /* Reset default padding */
+    list-style: none; /* Remove default list style */
+}
+
+.pagination li {
+    margin-right: 0.25rem; /* Space between pagination items */
+}
+
+.pagination a {
+    padding: 0.375rem 0.75rem; /* Padding for pagination links */
+    text-decoration: none; /* Remove underline */
+    color: #0d6efd; /* Link color */
+    background-color: #fff; /* Background color */
+    border: 1px solid #dee2e6; /* Border around each link */
+    border-radius: 0.25rem; /* Border radius for links */
+}
+
+.pagination a:hover {
+    color: #0056b3; /* Hover link color */
+    background-color: #e9ecef; /* Hover background color */
+    border-color: #dee2e6; /* Keep the same border color */
+}
+
+.pagination a:focus {
+    color: #0056b3; /* Focus link color */
+    background-color: #ced4da; /* Focus background color */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Focus shadow effect */
+    outline: none; /* Remove the default focus outline */
+}
+
+.pagination .active a {
+    color: #fff; /* Active page text color */
+    background-color: #0d6efd; /* Active page background color */
+    border-color: #0d6efd; /* Active page border color */
+}
+
+.pagination .disabled a {
+    color: #6c757d; /* Disabled link color */
+    background-color: #f8f9fa; /* Disabled background color */
+    border-color: #dee2e6; /* Disabled border color */
+    pointer-events: none; /* Disable interaction */
+    cursor: not-allowed; /* Show a disabled cursor */
+}

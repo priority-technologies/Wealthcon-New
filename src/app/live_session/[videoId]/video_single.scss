@@ -1,0 +1,23 @@
+.video-single{
+    .videoPlayer{
+        border-radius: 14px;
+        overflow: hidden;
+        .video-react-big-play-button-left{
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid oklch(var(--p));
+            background: oklch(var(--p));
+            left: calc(50% - 25px);
+            top: calc(50% - 25px);
+            &::before{
+                top: 2px;   
+            }
+        }
+    }
+    .video_scroll{
+        overflow-y:scroll;
+        height: 78vh;
+        width: 100%;
+      }
+}
