@@ -7,6 +7,8 @@ export const metadata = {
     "TMP Wealthcon is an educational platform. It does not provide investment advice or tips, nor does it claim any guaranteed returns.",
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function page() {
   return <LoginForm />;
 }

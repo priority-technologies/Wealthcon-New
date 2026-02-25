@@ -23,7 +23,7 @@ import {
 
 import axios from "axios";
 import SuccessModal from "./SuccessModal";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import { getCurrentDateTime } from "@/helpers/all";
 import { useRouter } from "next/navigation";
 import { adminRoles, roleOptions } from "@/helpers/constant";

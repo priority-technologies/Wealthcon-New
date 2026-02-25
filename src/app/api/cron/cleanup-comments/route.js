@@ -1,3 +1,30 @@
+/**
+ * COMMENT CLEANUP CRON JOB
+ *
+ * Schedule: Daily at 2:00 AM IST
+ * Frequency: Once per day
+ * Timezone: IST (Indian Standard Time, UTC+5:30)
+ *
+ * Cron Configuration in vercel.json:
+ * {
+ *   "crons": [
+ *     {
+ *       "path": "/api/cron/cleanup-comments",
+ *       "schedule": "0 20 * * *"
+ *     }
+ *   ]
+ * }
+ *
+ * Cron Expression: "0 20 * * *"
+ * - Minute: 0
+ * - Hour: 20 (8 PM UTC = 1:30 AM IST)
+ * - Day of Month: * (any day)
+ * - Month: * (any month)
+ * - Day of Week: * (any day)
+ *
+ * This ensures rejected comments older than 30 days are deleted daily at 2:00 AM IST
+ */
+
 import { NextResponse } from "next/server";
 import Comments from "../../../../schemas/Comments";
 import connectToDatabase from "../../../../_database/mongodb";

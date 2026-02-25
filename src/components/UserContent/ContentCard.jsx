@@ -3,11 +3,18 @@
 import React from 'react';
 import { PlayCircle } from 'lucide-react';
 
-const ContentCard = ({ item }) => {
+const ContentCard = ({ item, rank = null }) => {
   if (!item) return null;
 
   return (
     <div className="group relative flex-shrink-0 w-64 rounded-lg overflow-hidden shadow-lg cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:z-10">
+      {/* Ranking Badge */}
+      {rank && (
+        <div className="absolute top-3 left-3 z-20 bg-cyan-500 text-black font-black text-xl rounded-full w-10 h-10 flex items-center justify-center">
+          {rank}
+        </div>
+      )}
+
       <img
         src={item.thumbnail || '/placeholder.png'}
         alt={item.title}

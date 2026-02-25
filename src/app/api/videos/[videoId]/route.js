@@ -62,9 +62,9 @@ export async function GET(request, { params }) {
     return NextResponse.json({
       ...newVideo,
       thumbnail: newVideo.thumbnailFileName
-        ? `${process.env.AWS_CLOUDFRONT_URL}/${newVideo.thumbnailFileName}`
+        ? `/uploads/thumbnails/${newVideo.thumbnailFileName}`
         : "",
-      videoUrl: `${process.env.AWS_CLOUDFRONT_URL}/${newVideo.videoFileName}`,
+      videoUrl: `/uploads/videos/${newVideo.videoFileName}`,
       savedLater,
       watchedDuration: history?.watchedDuration || 0,
     });

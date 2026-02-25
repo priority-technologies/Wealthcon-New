@@ -308,13 +308,14 @@ export async function completeUploadGallary(
   }
 }
 
-export async function completeUploadBgImage(filename, url) {
+export async function completeUploadBgImage(filename, url, imageType = "Auth Image") {
   try {
     await axios.post(
       "/api/admin/upload/bg-images",
       {
         filename,
         url,
+        imageType,
       },
       {
         headers: {
@@ -340,4 +341,61 @@ export async function carryAndIncrementV(oldPath, newPath) {
   params.set("v", oldV + 1);
 
   return `${base}?${params.toString()}`;
+}
+
+/**
+ * Poll the conversion status of a video
+ * @param {string} videoId - The video ID to check status for
+ * @param {function} onProgress - Callback function called with progress (0-100)
+ * @param {number} maxDuration - Maximum time to poll in milliseconds (default: 45 minutes)
+ * @returns {Promise} Resolves when conversion is complete or fails
+ */
+export async function pollConversionStatus(videoId, onProgress, maxDuration = 45 * 60 * 1000) {
+  return new Promise((resolve, reject) => {
+    let pollInterval = null;
+    let totalTime = 0;
+    const pollDelay = 2000; // Poll every 2 seconds
+
+    const poll = async () => {
+      try {
+        const response = await axios.get(
+          `/api/admin/videos/${videoId}/conversion-status`,
+          {
+            headers: {
+              'x-user-role': 'admin',
+            },
+          }
+        );
+
+        const { status, progress, error } = response.data;
+
+        // Call progress callback
+        if (onProgress && typeof onProgress === 'function') {
+          onProgress(Math.round(progress));
+        }
+
+        if (status === 'completed') {
+          clearInterval(pollInterval);
+          resolve({ success: true, ...response.data });
+        } else if (status === 'failed') {
+          clearInterval(pollInterval);
+          reject(new Error(error || 'Video conversion failed'));
+        } else if (totalTime > maxDuration) {
+          clearInterval(pollInterval);
+          reject(new Error('Conversion timeout: Video took too long to convert'));
+        }
+
+        totalTime += pollDelay;
+      } catch (error) {
+        clearInterval(pollInterval);
+        reject(error);
+      }
+    };
+
+    // Start polling
+    pollInterval = setInterval(poll, pollDelay);
+
+    // Initial poll immediately
+    poll();
+  });
 }

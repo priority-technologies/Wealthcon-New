@@ -11,7 +11,7 @@ export async function GET() {
     const images = await BgImage.find().sort({ createdAt: -1 }).lean();
     const data = images.map((image) => ({
         ...image,
-      path: `${process.env.AWS_CLOUDFRONT_URL}/${image.filename}`
+      path: `/uploads/bg-images/${image.filename}`
     }));
     return NextResponse.json(data);
   } catch (error) {

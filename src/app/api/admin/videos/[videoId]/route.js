@@ -10,7 +10,12 @@ export async function GET(request, { params }) {
     if (!video) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
-    return NextResponse.json({ video });
+    const formattedVideo = {
+      ...video,
+      thumbnail: video.thumbnailFileName ? `/uploads/thumbnails/${video.thumbnailFileName}` : "",
+      videoUrl: `/uploads/videos/${video.videoFileName}`,
+    };
+    return NextResponse.json({ video: formattedVideo });
   } catch (error) {
     console.error("Error fetching video:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

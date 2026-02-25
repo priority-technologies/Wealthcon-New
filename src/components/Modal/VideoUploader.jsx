@@ -19,11 +19,12 @@ import {
   insertUploadVideoDB,
   uploadPart,
   uploadVideoThumbnail,
+  pollConversionStatus,
 } from "../../util/uploadFile";
 
 import axios from "axios";
 import SuccessModal from "./SuccessModal";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import { getCurrentDateTime, secToMin } from "@/helpers/all";
 import { adminRoles, roleOptions } from "@/helpers/constant";
 
@@ -39,6 +40,8 @@ const VideoUploader = ({ showModal, setShowModal, modalTitle }) => {
   const [msg, setMsg] = useState("");
   const [videoDuration, setVideoDuration] = useState(0);
   const [channels, setChannels] = useState([]);
+  const [uploadPhaseComplete, setUploadPhaseComplete] = useState(false);
+  const [conversionStarted, setConversionStarted] = useState(false);
 
   // Fetch channels on mount
   useEffect(() => {
@@ -235,13 +238,36 @@ const VideoUploader = ({ showModal, setShowModal, modalTitle }) => {
       return updateVal;
     });
 
-    setProgress(100);
-    setBtnLoading(false);
-    setCancelTokenSource(null);
+    // Upload phase complete, now poll for conversion
+    setUploadPhaseComplete(true);
+    setConversionStarted(true);
+    setProgress(50); // 50% for upload completion
 
-    setSuccessModal(true);
-    setError(false);
-    setMsg("Upload successfully!");
+    try {
+      await pollConversionStatus(insertId, (conversionProgress) => {
+        // Conversion progress is 0-100, map to 50-100 for overall progress
+        const totalProgress = 50 + (conversionProgress / 2);
+        setProgress(Math.round(totalProgress));
+      });
+
+      // Conversion completed successfully
+      setProgress(100);
+      setSuccessModal(true);
+      setError(false);
+      setMsg("Upload and conversion completed successfully!");
+    } catch (conversionError) {
+      console.error("Conversion error:", conversionError.message);
+      // Conversion failed, but video upload was successful
+      // It will fall back to MP4 playback
+      setProgress(100);
+      setSuccessModal(true);
+      setError(false);
+      setMsg("Upload completed! Video will play in MP4 format.");
+    } finally {
+      setBtnLoading(false);
+      setCancelTokenSource(null);
+    }
+
     closeModal();
   };
 
@@ -436,7 +462,10 @@ const VideoUploader = ({ showModal, setShowModal, modalTitle }) => {
                   ))}
                 </select>
 
-                <ProgressBar progress={progress} />
+                <ProgressBar
+                  progress={progress}
+                  label={conversionStarted ? "Converting to HLS" : "Uploading video"}
+                />
               </fieldset>
               <div className="flex flex-wrap gap-3 mt-8 justify-center	">
                 <Button

@@ -1,11 +1,22 @@
 import connectToDatabase from "../../../../_database/mongodb";
 import Users from "../../../../schemas/Users";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function GET(request) {
-  const loggedUserId = request.headers.get("x-user-id");
- 
   try {
+    // Get token from cookies or Authorization header
+    const token = request.cookies.get("token")?.value ||
+                  request.headers.get("Authorization")?.replace("Bearer ", "");
+
+    if (!token) {
+      return NextResponse.json({ error: "No token provided" }, { status: 401 });
+    }
+
+    // Decode the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    const loggedUserId = decoded.id;
+
     await connectToDatabase();
 
     let user = await Users.findById(loggedUserId).select(

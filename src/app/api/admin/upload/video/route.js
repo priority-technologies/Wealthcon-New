@@ -3,6 +3,7 @@ export const maxDuration = 60;
 import { NextResponse } from "next/server";
 import Videos from "@/schemas/Videos";
 import connectToDatabase from "@/_database/mongodb";
+import { enqueueVideoConversion } from "@/lib/queue";
 
 export async function POST(request) {
   try {
@@ -66,6 +67,17 @@ export async function POST(request) {
     });
 
     await video.save();
+
+    // Enqueue HLS conversion job
+    try {
+      const videoPath = `/uploads/videos/${fileName}`;
+      await enqueueVideoConversion(video._id.toString(), fileName, videoPath);
+      console.log(`✅ Queued HLS conversion for video ${video._id}`);
+    } catch (queueError) {
+      console.error('Error enqueueing conversion:', queueError.message);
+      // Don't fail the upload if queueing fails, log it and continue
+      // The video can be converted later manually
+    }
 
     return NextResponse.json(
       {

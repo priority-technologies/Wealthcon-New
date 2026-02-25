@@ -37,7 +37,7 @@ export async function GET(request) {
 
     const newGallery = gallery.map(val=>({
       ...val,
-      image: `${process.env.AWS_CLOUDFRONT_URL}/${val.imageFileName}`
+      image: `/uploads/gallery/${val.imageFileName}`
     }))
     return NextResponse.json(
       { gallery: newGallery },

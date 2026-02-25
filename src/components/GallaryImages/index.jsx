@@ -5,7 +5,7 @@ import GalleryModal from "../Modal/GalleryModal";
 import { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import PageLoading from "../Loading/PageLoading";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import Pagination from "../Pagination";
 import { useRouter } from "next/navigation";
 

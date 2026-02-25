@@ -1,3 +1,30 @@
+/**
+ * VIDEO RANKING UPDATE CRON JOB
+ *
+ * Schedule: Weekly on Saturday at 12:01 AM IST
+ * Frequency: Once per week (every Saturday)
+ * Timezone: IST (Indian Standard Time, UTC+5:30)
+ *
+ * Cron Configuration in vercel.json:
+ * {
+ *   "crons": [
+ *     {
+ *       "path": "/api/cron/update-rankings",
+ *       "schedule": "31 18 * * 5"
+ *     }
+ *   ]
+ * }
+ *
+ * Cron Expression: "31 18 * * 5"
+ * - Minute: 31 (Saturday 12:01 AM IST = Friday 6:31 PM UTC)
+ * - Hour: 18 (6 PM UTC = 11:30 PM IST)
+ * - Day of Month: * (any day)
+ * - Month: * (any month)
+ * - Day of Week: 5 (Friday UTC, which is Saturday IST)
+ *
+ * This ensures rankings are updated every Saturday at 12:01 AM IST
+ */
+
 import { NextResponse } from "next/server";
 import Videos from "../../../../schemas/Videos";
 import Channel from "../../../../schemas/Channel";

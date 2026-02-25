@@ -6,7 +6,7 @@ import BgImage from "@/schemas/BgImage";
 
 export async function POST(request) {
   try {
-    const { filename, url } = await request.json();
+    const { filename, url, imageType } = await request.json();
 
     if (!filename || !url) {
       return new NextResponse("Missing required fields", { status: 400 });
@@ -17,6 +17,7 @@ export async function POST(request) {
     const newImage = new BgImage({
       filename,
       path: url,
+      imageType: imageType || "Auth Image",
     });
 
     await newImage.save();

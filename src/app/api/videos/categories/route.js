@@ -36,8 +36,8 @@ async function enrichVideosWithProgress(videos, userId) {
     return {
       ...video,
       watchPercentage: progress,
-      thumbnail: video.thumbnail || "",
-      videoUrl: `${process.env.AWS_CLOUDFRONT_URL}/${video.videoFileName}`,
+      thumbnail: video.thumbnailFileName ? `/uploads/thumbnails/${video.thumbnailFileName}` : "",
+      videoUrl: `/uploads/videos/${video.videoFileName}`,
     };
   });
 }

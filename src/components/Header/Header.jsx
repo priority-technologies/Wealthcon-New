@@ -6,13 +6,13 @@ import ProfileImage from "../../assets/images/svg/profile.svg";
 import ProfileDarkImage from "../../assets/images/svg/profiledark.svg";
 import Image from "next/image";
 import Link from "next/link";
-import Logo from "../../assets/images/svg/logo.svg";
 import HamburgerIcon from "../../assets/images/svg/hamburgerIcon.svg";
+import WealthconLogo from "@/components/Logo/WealthconLogo";
 import AngleIcon from "../../assets/images/svg/hamburgerIconReverce.svg";
 import Notification from "../../assets/images/svg/notification.svg";
 import SearchIcon from "../../assets/images/svg/search.svg";
 import { Fragment, useContext, useState } from "react";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -68,7 +68,7 @@ const Header = ({ toggleSideMenu, setToggleSideMenu }) => {
                 : "/home"
             }
           >
-            <Image src={Logo} alt="logo" className="text-center " />
+            <WealthconLogo size={64} />
           </Link>
         </div>
         <div className="navbar-end gap-4">

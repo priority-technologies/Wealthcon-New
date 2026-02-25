@@ -1,10 +1,17 @@
 'use client';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Filter from '../../components/Filter';
 import LiveSessionVideos from '../../components/LiveSessionVideos';
 import usePreventActions from '@/hooks/usePreventActions';
 
 function LiveSession() {
+	const router = useRouter();
+
+	useEffect(() => {
+		// Shorts feature is disabled - redirect to videos
+		router.push('/videos');
+	}, [router]);
 	//usePreventActions();
 	const [view, setView] = useState('grid');
 	const [filterSelect, setFilterSelect] = useState({

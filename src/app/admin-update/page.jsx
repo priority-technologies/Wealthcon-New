@@ -15,7 +15,7 @@ const AdminUpdatePage = () => {
       setLoading(true);
       const response = await fetch('/api/allAnnouncements');
       const data = await response.json();
-      setAnnouncements(data.announcement || []);
+      setAnnouncements(data.announcements || []);
     } catch (error) {
       console.error('Error fetching announcements:', error);
     } finally {
@@ -41,9 +41,8 @@ const AdminUpdatePage = () => {
               key={announcement._id}
               className="bg-wc-card p-6 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <h3 className="text-xl font-bold text-wc-cyan mb-2">{announcement.title}</h3>
               <div className="prose prose-invert max-w-none">
-                <p className="text-gray-200 whitespace-pre-wrap">{announcement.description}</p>
+                <p className="text-gray-200 whitespace-pre-wrap">{announcement.message}</p>
               </div>
               {announcement.createdAt && (
                 <p className="text-gray-500 text-sm mt-4">

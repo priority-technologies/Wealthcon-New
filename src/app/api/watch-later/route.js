@@ -124,9 +124,9 @@ export async function GET(request) {
       return {
         ...video,
         thumbnail: video.thumbnailFileName
-          ? `${process.env.AWS_CLOUDFRONT_URL}/${video.thumbnailFileName}`
+          ? `/uploads/thumbnails/${video.thumbnailFileName}`
           : "",
-        videoUrl: `${process.env.AWS_CLOUDFRONT_URL}/${video.videoFileName}`,
+        videoUrl: `/uploads/videos/${video.videoFileName}`,
         progress,
       };
     });

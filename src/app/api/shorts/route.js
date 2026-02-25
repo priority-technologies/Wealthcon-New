@@ -56,9 +56,9 @@ export async function GET(request) {
     const newVideo = videos.map((val) => ({
       ...val,
       thumbnail: val.thumbnailFileName
-        ? `${process.env.AWS_CLOUDFRONT_URL}/${val.thumbnailFileName}`
+        ? `/uploads/thumbnails/${val.thumbnailFileName}`
         : "",
-      videoUrl: `${process.env.AWS_CLOUDFRONT_URL}/${val.videoFileName}`,
+      videoUrl: `/uploads/videos/${val.videoFileName}`,
     }));
 
     return NextResponse.json(

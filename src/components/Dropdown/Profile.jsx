@@ -6,7 +6,7 @@ import "./dropdown.scss";
 import { Fragment, useContext } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 
 const Profile = ({ title, className, profileImage, position, ...rest }) => {
   const { setUserDetails, setLiveSessions, setNotes, setGallery, setMessages } =

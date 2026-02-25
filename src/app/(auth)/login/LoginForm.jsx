@@ -1,330 +1,211 @@
 "use client";
 
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import { useContext, useEffect, useState } from "react";
-import Button from "../../../components/Button";
-import InputChecks from "../../../components/Input/InputChecks";
-import Input from "../../../components/Input/Input";
-import Typography from "../../../components/Typography";
-import Image from "next/image";
-import AuthLogo from "../../../assets/images/AuthLogo.png";
-import openEye from "../../../assets/images/svg/openEye.svg";
-import closeEye from "../../../assets/images/svg/closeEye.svg";
-import CloseIcon from "../../../assets/images/svg/closeIcon.svg";
-import BImage from "../../../assets/images/docters.jpg";
+import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
-
-import "../AuthLayout.scss";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { UserContext } from "../../_context/User";
 import Link from "next/link";
+import WealthconLogo from "@/components/Logo/WealthconLogo";
 
 export default function LoginForm() {
   const { setUserDetails, setLiveSessions, setNotes, setGallery, setMessages } =
     useContext(UserContext);
   const router = useRouter();
-  const pathname = usePathname();
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [error, setError] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-
-  const [bgImage, setBgImage] = useState("");
-
-  useEffect(() => {
-    const fetchBgImage = async () => {
-      try {
-        const response = await axios.get(`/api/bg-images`);
-        if (response?.data) {
-          setBgImage(response.data);
-        } else {
-          setBgImage(BImage);
-        }
-      } catch (error) {
-        console.error("Failed to load background image", error);
-        setBgImage("");
-      }
-    };
-    fetchBgImage();
-  }, []);
-
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-      remember: false,
-    },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      password: Yup.string()
-        .min(8, "Password must be at least 8 characters")
-        .required("Password is required"),
-      remember: Yup.boolean().oneOf(
-        [true],
-        "You must accept the terms and conditions"
-      ),
-    }),
-    onSubmit: async (values) => {
-      setError(null);
-      setLoading(true);
-
-      try {
-        const response = await axios.post("/api/auth/login", {
-          email: values.email,
-          password: values.password,
-        });
-
-        const data = response?.data;
-        if (response.status === 200) {
-          const redirectPath =
-            data?.role === "admin" || data?.role === "superAdmin"
-              ? "/admin"
-              : "/home";
-
-          router.push(redirectPath);
-        } else {
-          setError(data?.error ?? "Login failed");
-        }
-      } catch (error) {
-        if (error?.response?.status === 500) {
-          setError("An error occurred. Please try again.");
-          setLoading(false);
-          return;
-        }
-        setError(error.response.data.error || "Something went wrong");
-        setLoading(false);
-      }
-    },
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     setUserDetails(null);
-    setLiveSessions(null);
-    setNotes(null);
-    setGallery(null);
-    setMessages(null);
+    setLiveSessions([]);
+    setNotes([]);
+    setGallery([]);
+    setMessages([]);
   }, [setUserDetails, setLiveSessions, setNotes, setGallery, setMessages]);
 
-  if (pathname !== "/login") {
-    router.push("/login");
-    return;
-  }
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-  const showTermsModal = () => {
-    setShowTerms(true);
-  };
+    // Validate form
+    if (!email || !password) {
+      setError("Email and password are required");
+      setLoading(false);
+      return;
+    }
 
-  const hideTermsModal = () => {
-    setShowTerms(false);
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email,
+        password,
+      });
+
+      const data = response?.data;
+      if (response.status === 200) {
+        const redirectPath =
+          data?.role === "admin" || data?.role === "superAdmin"
+            ? "/admin"
+            : "/home";
+        router.push(redirectPath);
+      } else {
+        setError(data?.error ?? "Login failed");
+        setLoading(false);
+      }
+    } catch (error) {
+      if (error?.response?.status === 500) {
+        setError("An error occurred. Please try again.");
+      } else {
+        setError(error?.response?.data?.error || "Something went wrong");
+      }
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      <div className="md:grid block grid-cols-10 h-screen">
-        <div className="login-sidebar flex flex-col justify-center xl:col-span-6 col-span-5">
-          <div className="flex min-h-[25vh] h-full">
-            <Image src={AuthLogo} alt="logo" className="m-auto md:w-96 w-60" />
+    <div className="relative w-screen h-screen flex items-center justify-center overflow-hidden bg-[#050a14]">
+      {/* Background Video with Ken Burns effect */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        poster="https://images.unsplash.com/photo-1554224154-260325c25b67?auto=format&fit=crop&w=1920&q=80"
+        style={{ animation: 'kenburns 15s ease-out infinite alternate' }}
+      >
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-computer-data-processing-34224-large.mp4" type="video/mp4" />
+      </video>
+
+      {/* Content */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Left: Branding */}
+        <div
+          className="text-white text-center lg:text-left"
+          style={{ animation: 'animateEnterLeft 0.6s ease-out 0.2s both' }}
+        >
+          <div className="inline-block lg:block">
+            <WealthconLogo size={160} />
           </div>
-          <img src={bgImage} alt="logo" className="h-[75vh]" />
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mt-4 uppercase">
+            WEALTHCON
+          </h1>
+          <p className="text-xl md:text-2xl font-light mt-2 text-cyan-300">
+            Financial Education Platform
+          </p>
+          <p className="text-lg text-white/80 mt-1">
+            For Doctors, By Doctors.
+          </p>
         </div>
-        <div className="bg-primary-content content-center block md:py-0 py-10 xl:col-span-4 col-span-5">
-          <div className="m-auto sm:w-96 px-4">
-            <form onSubmit={formik.handleSubmit}>
-              <Typography
-                tag="h1"
-                size="text-3xl"
-                weight="font-semibold"
-                color="text-base-content"
-                className="block text-left"
-              >
-                Welcome 👋
-              </Typography>
-              <Typography
-                tag="h4"
-                size="text-base"
-                weight="font-normal"
-                color="text-base-200"
-                className="block text-left pt-1 mb-4 mt-2"
-              >
-                Today is a new day. It&apos;s your day. <br />
-                You shape it.
-              </Typography>
-              <Input
-                type="email"
-                id="email"
-                label="Email"
-                placeholder="Example@email.com"
-                error={
-                  formik.touched.email && formik.errors.email
-                    ? formik.errors.email
-                    : null
-                }
-                {...formik.getFieldProps("email")}
-              />
+
+        {/* Right: Login Form */}
+        <div
+          className="bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl p-8 md:p-12 shadow-2xl"
+          style={{ animation: 'animateEnterRight 0.6s ease-out 0.4s both' }}
+        >
+          <form onSubmit={handleLogin}>
+            <h2 className="text-3xl font-bold text-white mb-2">Welcome Back 👋</h2>
+            <p className="text-white/60 mb-8">Sign in to access your dashboard.</p>
+
+            <div className="space-y-6">
+              {/* Email Input */}
               <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  label="Password"
-                  placeholder="At least 8 characters"
-                  error={
-                    formik.touched.password && formik.errors.password
-                      ? formik.errors.password
-                      : null
-                  }
-                  {...formik.getFieldProps("password")}
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white/5 border-2 border-white/20 rounded-lg px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-cyan-400 peer transition-colors"
+                  placeholder="Email"
+                  required
                 />
-                {
-                  <Image
-                    priority
-                    src={showPassword ? closeEye : openEye}
-                    height={26}
-                    width={26}
-                    alt="Password seen eye"
-                    className="absolute top-8 right-2 cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  />
-                }
+                <label
+                  htmlFor="email"
+                  className="absolute left-4 -top-2.5 text-sm text-white/70 bg-[#050a14] px-1 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-400 transition-all"
+                >
+                  Email
+                </label>
               </div>
 
-              <Typography
-                size="text-sm"
-                weight="font-normal"
-                color="text-primary"
-                className="block text-end grid content-center mb-4"
-              >
-                <Link href="/forgot-password">Forgot your password?</Link>
-              </Typography>
+              {/* Password Input */}
+              <div className="relative">
+                <input
+                  type={passwordVisible ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border-2 border-white/20 rounded-lg px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-cyan-400 peer transition-colors"
+                  placeholder="Password"
+                  required
+                />
+                <label
+                  htmlFor="password"
+                  className="absolute left-4 -top-2.5 text-sm text-white/70 bg-[#050a14] px-1 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-cyan-400 transition-all"
+                >
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  className="absolute top-1/2 right-4 -translate-y-1/2 text-white/50 hover:text-white/80"
+                  aria-label="Toggle password visibility"
+                >
+                  {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
 
-              <InputChecks
-                type="checkbox"
-                id="remember"
-                label={
-                  <>
-                    I accept the{" "}
-                    <span className="underline" onClick={showTermsModal}>
-                      terms and conditions
-                    </span>
-                  </>
-                }
-                {...formik.getFieldProps("remember")}
-              />
-              {formik.touched.remember && formik.errors.remember ? (
-                <div className="text-red-600">{formik.errors.remember}</div>
-              ) : null}
-              {error && <div className="text-red-600">{error}</div>}
-              <Button
-                type="submit"
-                variant="btn-primary"
-                className="mt-10 px-7 w-full"
-                loading={loading}
-              >
-                Login
-              </Button>
-            </form>
-          </div>
+            <div className="flex justify-end mt-4">
+              <Link href="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 hover:underline">
+                Forgot password?
+              </Link>
+            </div>
+
+            {error && <p className="text-red-400 text-sm mt-4 text-center">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-8 bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-3 rounded-lg text-lg transition-all transform hover:scale-105 active:scale-100 disabled:bg-cyan-800 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Logging in...
+                </>
+              ) : 'Login'}
+            </button>
+
+            <p className="text-center text-xs text-white/40 mt-8">
+              By signing in, you agree to our <Link href="#" className="underline hover:text-white/60">Terms of Service</Link> and <Link href="#" className="underline hover:text-white/60">Privacy Policy</Link>.
+            </p>
+          </form>
         </div>
       </div>
-      <dialog id="my_modal_1" className="modal" open={showTerms}>
-        <div className="modal-box rounded-none py-10 bg-primary-content max-w-5xl w-full">
-          <Button
-            size="btn-sm"
-            variant="btn-ghost"
-            className="absolute right-2 top-2"
-            iconPosition="left"
-            icon={CloseIcon}
-            onClick={hideTermsModal}
-          ></Button>
-          <Typography
-            tag="h4"
-            size="text-3xl"
-            weight="font-semibold"
-            color="text-base-content"
-            className="block text-center mb-5"
-          >
-            Terms and Conditions
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="bloc mb-3"
-          >
-            Step-One course powered by Neslife is an educational platform. It does not provide investment advice or tips, nor does it claim any guaranteed returns. All participants must conduct their own research before making investment decisions. Step-One course and its members are not liable for any losses.
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="block mb-3"
-          >
-            {" "}
-            Fees are not refundable, nontransferable .
-Personal investment advice will not be provided at Step ONE .
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="block mb-3"
-          >
-            Step-One course does not sell investment products, plans, or policies, nor it is associated with any brokers or financial advisors. It also does not accept sponsorships from external entities, including pharmaceutical or insurance companies. Only doctors and their family members can join Step-One course.
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="block mb-3"
-          >
-            Content Access: Assignment videos will be available until the course ends.
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="block mb-3"
-          >
-            Compliance: Learners must adhere to rules and not share course content with any outsider.
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="block mb-3"
-          >
-             I understand the risks involved in investing, and I am aware of the unpredictable nature of financial markets. The responsibility for any investment decisions, including potential losses, is entirely mine.
-          </Typography>
-          <Typography
-            tag="p"
-            size="text-base"
-            weight="font-medium"
-            color="text-base-200"
-            className="block mb-3"
-          >
-            By participating in Step-One course, I acknowledge that I have read, understood, and agree to the terms, conditions, and declarations stated above.
-          </Typography>
-          
-          <div className="flex flex-wrap gap-3 mt-8 justify-center	">
-            <Button
-              variant="btn-primary"
-              className="btn-sm w-40"
-              onClick={hideTermsModal}
-            >
-              I Agree
-            </Button>
-          </div>
-        </div>
-      </dialog>
-    </>
+
+      <style>{`
+        @keyframes kenburns {
+          from { transform: scale(1); }
+          to { transform: scale(1.05); }
+        }
+        @keyframes animateEnterLeft {
+          from { opacity: 0; transform: translateX(-30px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes animateEnterRight {
+          from { opacity: 0; transform: translateX(30px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
+    </div>
   );
 }

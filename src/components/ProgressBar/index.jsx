@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function index({ progress }) {
+export default function index({ progress, label = 'Task in progress' }) {
 
     if(progress <= 0){
         return <></>
@@ -11,7 +11,7 @@ export default function index({ progress }) {
 			<div className='flex mb-2 items-center justify-between'>
 				<div>
 					<span className='text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200'>
-						Task in progress
+						{label}
 					</span>
 				</div>
 				<div className='text-right'>

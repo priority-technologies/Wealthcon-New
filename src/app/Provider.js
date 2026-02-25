@@ -14,7 +14,7 @@ export default function Provider({ children }) {
   const isPublicPath = ["/login", "/register", "/forgot-password"].includes(
     pathname
   );
-  const isAdminPath = pathname.startsWith("/admin");
+  const isAdminPath = pathname.startsWith("/admin") && !pathname.startsWith("/admin-update");
 
   if (!isPublicPath && !userDetails) {
     return <InitialLoading />;

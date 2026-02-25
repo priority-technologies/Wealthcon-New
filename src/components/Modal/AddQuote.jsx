@@ -8,7 +8,7 @@ import Typography from "../Typography";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import { useRouter } from "next/navigation";
 import { generateSignUrl } from "@/util/uploadFile";
 import Image from "next/image";

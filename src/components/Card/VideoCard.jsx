@@ -10,7 +10,7 @@ import VideoEdit from "../Modal/VideoEdit";
 import YTEdit from "../Modal/YTEdit";
 import axios from "axios";
 import { formatTimestampDate } from "../../helpers/all";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import logo from "@/assets/images/thumb-logo.jpg";
 import { adminRoleObject } from "@/helpers/constant";
 

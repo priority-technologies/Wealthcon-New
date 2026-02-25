@@ -7,17 +7,7 @@ import { Search, Bell, User, Lock, LogOut, Settings } from 'lucide-react';
 import SearchModal from './SearchModal';
 import NotificationPanel from './NotificationPanel';
 import { UserContext } from '@/app/_context/User';
-
-const WealthconLogoSmall = () => (
-  <svg width="48" height="48" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
-    <path d="M35 65 L5 20 L17.5 20 L35 45 L52.5 20 L65 20 Z" fill="#00AEEF" />
-    <path d="M17.5 20 L35 45 L35 37.5 L22.5 20 Z" fill="rgba(0,0,0,0.2)" />
-    <path d="M52.5 20 L35 45 L35 37.5 L47.5 20 Z" fill="rgba(255,255,255,0.2)" />
-    <path d="M35 50 L31 57.5 H 39 Z" fill="#00AEEF" />
-    <rect x="29" y="57.5" width="12" height="2" rx="1" fill="#00AEEF" />
-    <path d="M35 47.5 L34 45 H 36 Z" fill="#050a14" />
-  </svg>
-);
+import WealthconLogo from '@/components/Logo/WealthconLogo';
 
 const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -62,9 +52,6 @@ const Navbar = () => {
   const navItems = [
     { label: 'Home', href: '/home' },
     { label: 'Videos', href: '/videos' },
-    { label: 'Shorts', href: '/shorts' },
-    { label: 'Notes', href: '/notes' },
-    { label: 'Charts', href: '/charts' },
     { label: 'Dr. Ram\'s Message', href: '/dr-ram' },
     { label: 'Admin\'s Update', href: '/admin-update' },
     { label: 'My List', href: '/my-list' },
@@ -76,7 +63,7 @@ const Navbar = () => {
         <div className="container mx-auto px-4 md:px-12 py-5 flex items-center justify-between">
           <div className="flex items-center space-x-10">
             <Link href="/home" className="hover:opacity-80 transition-opacity">
-              <WealthconLogoSmall />
+              <WealthconLogo size={72} />
             </Link>
             <ul className="hidden md:flex items-center space-x-8 text-white font-semibold text-lg">
               {navItems.map((item) => (

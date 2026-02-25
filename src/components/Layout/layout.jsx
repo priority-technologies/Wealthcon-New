@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Logo from "../../assets/images/svg/logo.svg";
-import SmallLogo from "../../assets/images/svg/smalllogo.svg";
 import downAngle from "../../assets/images/svg/downAngle2.svg";
+import WealthconLogo from "@/components/Logo/WealthconLogo";
 import Dashbord from "../../assets/images/svg/dashbord.svg";
 import CMS from "../../assets/images/svg/cms.svg";
 import UMS from "../../assets/images/svg/ums.svg";
@@ -72,11 +71,7 @@ const Layout = ({ className, data }) => {
                 }
                 onClick={closeDrawer}
               >
-                <Image
-                  src={toggleSideMenu === "default" ? Logo : SmallLogo}
-                  alt="logo"
-                  className="text-center"
-                />
+                <WealthconLogo size={toggleSideMenu === "default" ? 100 : 60} />
               </Link>
             </div>
             <div className="pt-6 bg-primary ">
@@ -106,7 +101,6 @@ const Layout = ({ className, data }) => {
                       className={`text-primary-content text-base px-6 py-4 ${
                         [
                           "/admin/live_session",
-                          "/admin/shorts",
                           "/admin/notes",
                           "/admin/gallery",
                           "/admin/message",
@@ -158,27 +152,6 @@ const Layout = ({ className, data }) => {
                             {toggleSideMenu === "default" && "Videos"}
                           </Link>
                         </li>
-                        <li>
-                          <Link
-                            href="/admin/shorts"
-                            className={`text-primary-content text-base px-6 py-4  ${
-                              ["/admin/shorts"].includes(pathname)
-                                ? "active"
-                                : ""
-                            }`}
-                            onClick={() => {
-                              closeDrawer();
-                              window?.sessionStorage?.removeItem("lp");
-                            }}
-                          >
-                            <Image
-                              src={Live}
-                              alt="logo"
-                              className="text-center mr-2"
-                            />
-                            {toggleSideMenu === "default" && "Shorts"}
-                          </Link>
-                        </li>
                         {/* <li>
                           <Link
                             href="/admin/shorts"
@@ -200,7 +173,7 @@ const Layout = ({ className, data }) => {
                             {toggleSideMenu === "default" && "Shorts"}
                           </Link>
                         </li> */}
-                        <li>
+                        {/* <li>
                           <Link
                             href="/admin/notes"
                             className={`text-primary-content text-base px-6 py-4  ${
@@ -220,7 +193,7 @@ const Layout = ({ className, data }) => {
                             />
                             {toggleSideMenu === "default" && "Notes"}
                           </Link>
-                        </li>
+                        </li> */}
                         <li>
                           <Link
                             href="/admin/gallery"
@@ -416,7 +389,7 @@ const Layout = ({ className, data }) => {
                       {toggleSideMenu === "default" && "Shorts"}
                     </Link>
                   </li> */}
-                  <li>
+                  {/* <li>
                     <Link
                       href="/notes"
                       className={`text-primary-content text-base px-6 py-4 ${
@@ -434,7 +407,7 @@ const Layout = ({ className, data }) => {
                       />
                       {toggleSideMenu === "default" && "Notes & Charts"}
                     </Link>
-                  </li>
+                  </li> */}
                   {/* <li>
                     <Link
                       href="/gallery"

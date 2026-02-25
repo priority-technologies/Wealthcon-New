@@ -1,112 +1,39 @@
-import { NextResponse } from "next/server";
-import isAuthenticated from "./auth/isAuthenticated";
+import { NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
-export async function middleware(request) {
-  const path = request.nextUrl.pathname;
+export function middleware(request) {
+  // Get token from cookies
+  const token = request.cookies.get('token')?.value;
 
-  const token = request.cookies.get("token")?.value || "";
-  const isPublicPath =
-    path === "/login" || path === "/register" || path === "/forgot-password";
+  const response = NextResponse.next();
 
-  const isAuth = await isAuthenticated(request);
+  if (token) {
+    try {
+      // Verify and decode the token
+      const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
 
-  // Authenticate API calls
-  if (
-    !isPublicPath &&
-    path.startsWith("/api/") &&
-    !path.endsWith("login") &&
-    !path.endsWith("live") &&
-    !path.endsWith("register") &&
-    !path.endsWith("generate-otp") &&
-    !path.endsWith("verify-otp") &&
-    !path.endsWith("reset-password") &&
-    !path.endsWith("check-device") &&
-    !path.endsWith("bg-images") &&
-    !path.endsWith("categories")
-  ) {
-    if (!isAuth) {
-      const headers = {
-        "Set-Cookie": `token=; HttpOnly; Path=/; Expires=${new Date(
-          0
-        ).toUTCString()}`,
-      };
-      return Response.json(
-        { success: false, message: "authentication failed" },
-        { status: 401, headers }
-      );
-    }
-
-    // JWT verification is sufficient - skip device check for now
-    // Device check can be re-enabled later if needed
-
-    if (
-      isAuth?.role !== "admin" &&
-      isAuth?.role !== "superAdmin" &&
-      path.startsWith("/api/admin")
-    ) {
-      return NextResponse.json(
-        { success: false, message: "Access denied" },
-        { status: 401 }
-      );
-    }
-
-    const requestHeaders = new Headers(request.headers);
-    requestHeaders.set("x-user-id", isAuth.id);
-    requestHeaders.set("x-user-role", isAuth.role);
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
-  }
-
-  // Handle non-API routes
-  if (!path.startsWith("/api/")) {
-    if (
-      path.startsWith("/admin") &&
-      (!isAuth || (isAuth?.role !== "admin" && isAuth?.role !== "superAdmin"))
-    ) {
-      return NextResponse.redirect(new URL("/home", request.nextUrl));
-    }
-
-    if (
-      isPublicPath &&
-      token &&
-      isAuth?.role !== "admin" &&
-      isAuth?.role !== "superAdmin"
-    ) {
-      return NextResponse.redirect(new URL("/home", request.nextUrl));
-    }
-
-    if (
-      isPublicPath &&
-      token &&
-      (isAuth?.role === "admin" || isAuth?.role === "superAdmin")
-    ) {
-      return NextResponse.redirect(new URL("/admin", request.nextUrl));
-    }
-
-    if (!isPublicPath && !token) {
-      return NextResponse.redirect(new URL("/login", request.nextUrl));
+      // Set headers for API routes to use
+      // In Next.js 14, we need to set on request headers before cloning
+      response.headers.set('x-user-id', decoded.id);
+      response.headers.set('x-user-role', decoded.role);
+      response.headers.set('x-user-email', decoded.email);
+    } catch (error) {
+      console.error('JWT verification error:', error.message);
     }
   }
+
+  return response;
 }
 
-// See "Matching Paths" below to learn more
+// Apply middleware to all routes
 export const config = {
   matcher: [
-    "/home",
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/live_session",
-    "/live_session/:path*",
-    "/shorts",
-    "/shorts/:path*",
-    "/notes",
-    "/notes/:path*",
-    "/gallery",
-    "/admin/:path*",
-    "/api/:path*",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

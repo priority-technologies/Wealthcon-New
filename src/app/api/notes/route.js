@@ -41,8 +41,8 @@ export async function GET(request) {
 
     const newNotes = notes.map((val) => ({
       ...val,
-      thumbnail: val.thumbnailFileName ? `${process.env.AWS_CLOUDFRONT_URL}/${val.thumbnailFileName}` : "",
-      noteUrl: `${process.env.AWS_CLOUDFRONT_URL}/${val.noteFileName}`,
+      thumbnail: val.thumbnailFileName ? `/uploads/thumbnails/${val.thumbnailFileName}` : "",
+      noteUrl: `/uploads/notes/${val.noteFileName}`,
     }));
 
     return NextResponse.json(

@@ -50,6 +50,12 @@ export default function LiveSessionSingleVideo({ videoId, admin }) {
   const [viewLoading, setViewLoading] = useState(false);
   const [watchProgress, setWatchProgress] = useState(0);
 
+  // Comment approval states
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [approvingCommentId, setApprovingCommentId] = useState(null);
+  const [rejectingCommentId, setRejectingCommentId] = useState(null);
+
   const handleSaveLater = async () => {
     try {
       setBtnLoading(true);
@@ -162,6 +168,61 @@ export default function LiveSessionSingleVideo({ videoId, admin }) {
     }
   };
 
+  const fetchComments = async () => {
+    try {
+      setCommentsLoading(true);
+      const response = await axios.get(`/api/videos/${videoId}/comments`, {
+        headers: { 'x-user-role': 'admin' },
+      });
+      if (response.status === 200) {
+        const pendingComments = (response.data.comments || []).filter(
+          (c) => c.status === 'pending' || !c.isApproved
+        );
+        setComments(pendingComments);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error.message);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const handleApproveComment = async (commentId) => {
+    try {
+      setApprovingCommentId(commentId);
+      const response = await axios.put('/api/admin/comments', {
+        commentId,
+        status: 'approved',
+      });
+      if (response.status === 200) {
+        setComments(comments.filter((c) => c._id !== commentId));
+      }
+    } catch (error) {
+      console.error('Error approving comment:', error.message);
+      alert('Failed to approve comment');
+    } finally {
+      setApprovingCommentId(null);
+    }
+  };
+
+  const handleRejectComment = async (commentId) => {
+    try {
+      setRejectingCommentId(commentId);
+      const response = await axios.put('/api/admin/comments', {
+        commentId,
+        status: 'rejected',
+      });
+      if (response.status === 200) {
+        setComments(comments.filter((c) => c._id !== commentId));
+      }
+    } catch (error) {
+      console.error('Error rejecting comment:', error.message);
+      alert('Failed to reject comment');
+    } finally {
+      setRejectingCommentId(null);
+    }
+  };
+
   useEffect(() => {
     fetchVideoData();
   }, [videoId]);
@@ -173,8 +234,9 @@ export default function LiveSessionSingleVideo({ videoId, admin }) {
   useEffect(() => {
     if (videoId && admin) {
       fetchVideosViewUser(viewPage);
+      fetchComments();
     }
-  }, [videoId, viewPage, admin]);
+  }, [videoId, admin]);
 
   const loadMoreUsers = () => {
     if (!viewLoading && viewHasMore) {
@@ -272,36 +334,20 @@ export default function LiveSessionSingleVideo({ videoId, admin }) {
               width: "100%",
             }}
             >
-            <Player
+            <video
               ref={playerRef}
-              autoPlay={false}
-              className="videoPlayer aspect-video mb-4"
+              className="videoPlayer aspect-video mb-4 w-full bg-black rounded"
               poster={video?.thumbnail || logo?.src}
-              onContextMenu={(e) => e.preventDefault()} // Disable right-click
-              // onMouseDown={(e) => e.preventDefault()} // Disable mouse down actions
-              // onMouseUp={(e) => e.preventDefault()} // Disable mouse up actions
-              aspectRatio="16:9"
-              fluid={true}
+              controls
               playsInline
-              // width={100}
-              // height={100}
-              startTime={minToSec(video?.watchedDuration) || 0}
+              onContextMenu={(e) => e.preventDefault()}
+              style={{ maxWidth: "100%", height: "auto" }}
             >
               {video?.videoUrl && (
-                <source src={video.videoUrl} type={videoSrcType} />
+                <source src={video.videoUrl} type={videoSrcType || "video/mp4"} />
               )}
-              <ControlBar autoHide={false} autoHideTime={false}>
-                <ReplayControl key={1} seconds={10} order={1.1} />
-                <ForwardControl seconds={10} order={1.2} />
-                <CurrentTimeDisplay order={4.1} />
-                <TimeDivider order={4.2} />
-                <PlaybackRateMenuButton
-                  rates={[2, 1.5, 1.25, 1, 0.5, 0.1]}
-                  order={7.1}
-                />
-                <VolumeMenuButton />
-              </ControlBar>
-            </Player>
+              Your browser does not support the video tag.
+            </video>
             {!isVideoPlay && watchProgress ? (
               <div className="videoProgressBarContainer">
                 <div
@@ -379,6 +425,88 @@ export default function LiveSessionSingleVideo({ videoId, admin }) {
                   <div>Users not available</div>
                 )}
               </div>
+            </div>
+          )}
+
+          {admin && (
+            <div className="mt-8">
+              <h2 className="text-lg font-bold py-4 border-b border-gray-300">Comments Pending Approval</h2>
+              {commentsLoading ? (
+                <div className="py-4">
+                  <VideoLoading />
+                </div>
+              ) : comments.length === 0 ? (
+                <div className="py-4 text-center text-gray-600">
+                  No comments pending approval
+                </div>
+              ) : (
+                <div className="space-y-4 mt-4">
+                  {comments.map((comment) => (
+                    <div key={comment._id} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                      {/* Comment Header */}
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {comment.authorName || 'Anonymous'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(comment.postedAt || comment.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded">
+                          Pending
+                        </span>
+                      </div>
+
+                      {/* Comment Text */}
+                      <p className="text-gray-700 mb-3">{comment.commentText}</p>
+
+                      {/* Replies */}
+                      {comment.replies && comment.replies.length > 0 && (
+                        <div className="mb-3 pl-3 border-l-2 border-gray-300 text-sm">
+                          <p className="text-xs font-semibold text-gray-600 mb-2">
+                            Replies ({comment.replies.length}):
+                          </p>
+                          {comment.replies.map((reply, idx) => (
+                            <div key={idx} className="mb-2">
+                              <p className="font-semibold text-gray-700 text-sm">
+                                {reply.authorName}
+                              </p>
+                              <p className="text-gray-600 text-sm">{reply.replyText}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Meta */}
+                      <div className="flex gap-4 text-xs text-gray-600 mb-3">
+                        {comment.likes > 0 && <span>👍 {comment.likes} likes</span>}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <span>💬 {comment.replies.length} replies</span>
+                        )}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2 pt-3 border-t border-gray-300">
+                        <button
+                          onClick={() => handleApproveComment(comment._id)}
+                          disabled={approvingCommentId === comment._id}
+                          className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 disabled:bg-green-400 font-semibold"
+                        >
+                          {approvingCommentId === comment._id ? 'Approving...' : 'Approve'}
+                        </button>
+                        <button
+                          onClick={() => handleRejectComment(comment._id)}
+                          disabled={rejectingCommentId === comment._id}
+                          className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 disabled:bg-red-400 font-semibold"
+                        >
+                          {rejectingCommentId === comment._id ? 'Rejecting...' : 'Reject'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

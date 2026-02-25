@@ -234,11 +234,14 @@ const VideosPage = () => {
             <div className="container mx-auto px-4 md:px-12">
               <h2 className="text-2xl font-bold mb-6">All Videos</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {filteredAndSortedContent.slice(0, visibleCount).map((item) => (
-                  <Link key={item._id} href={`/videos/${item._id}`}>
-                    <VideoCard item={item} />
-                  </Link>
-                ))}
+                {filteredAndSortedContent.slice(0, visibleCount).map((item, index) => {
+                  const rank = topTenContent.findIndex(v => v._id === item._id);
+                  return (
+                    <Link key={item._id} href={`/videos/${item._id}`}>
+                      <VideoCard item={item} rank={rank !== -1 ? rank + 1 : null} />
+                    </Link>
+                  );
+                })}
               </div>
             </div>
             {visibleCount < filteredAndSortedContent.length && (

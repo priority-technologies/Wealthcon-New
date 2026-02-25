@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import createJWT from "../../../../JWT/createJWT";
 import connectToDatabase from "../../../../_database/mongodb";
 import Users from "../../../../schemas/Users";
@@ -17,9 +18,18 @@ export async function POST(request) {
 
     await connectToDatabase();
 
-    const user = await Users.findOne({ email, password });
+    const user = await Users.findOne({ email });
 
     if (!user) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    // Compare provided password with hashed password in database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 }

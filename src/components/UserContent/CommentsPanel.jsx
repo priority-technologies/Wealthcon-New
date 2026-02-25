@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Send, Loader } from 'lucide-react';
 import Comment from './Comment';
 
-export default function CommentsPanel({ videoId, userId }) {
+export default function CommentsPanel({ videoId, userId, userRole }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -38,7 +38,10 @@ export default function CommentsPanel({ videoId, userId }) {
     try {
       const response = await fetch(`/api/videos/${videoId}/comments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId,
+        },
         body: JSON.stringify({ commentText: newComment }),
       });
 
@@ -58,7 +61,10 @@ export default function CommentsPanel({ videoId, userId }) {
     try {
       const response = await fetch(
         `/api/videos/${videoId}/comments/${commentId}/like`,
-        { method: 'POST' }
+        {
+          method: 'POST',
+          headers: { 'x-user-id': userId },
+        }
       );
       if (!response.ok) throw new Error('Failed to like comment');
 
@@ -79,7 +85,10 @@ export default function CommentsPanel({ videoId, userId }) {
         `/api/videos/${videoId}/comments/${commentId}/replies`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId,
+          },
           body: JSON.stringify({ replyText }),
         }
       );
@@ -103,7 +112,10 @@ export default function CommentsPanel({ videoId, userId }) {
     try {
       const response = await fetch(
         `/api/videos/${videoId}/comments/${commentId}`,
-        { method: 'DELETE' }
+        {
+          method: 'DELETE',
+          headers: { 'x-user-id': userId },
+        }
       );
 
       if (!response.ok) throw new Error('Failed to delete comment');
@@ -111,6 +123,48 @@ export default function CommentsPanel({ videoId, userId }) {
       setComments(comments.filter((c) => c._id !== commentId));
     } catch (err) {
       console.error('Error deleting comment:', err);
+    }
+  };
+
+  const handleApprove = async (commentId) => {
+    try {
+      const response = await fetch(
+        `/api/admin/comments/${commentId}/approve`,
+        { method: 'PUT' }
+      );
+
+      if (!response.ok) throw new Error('Failed to approve comment');
+
+      const data = await response.json();
+      setComments(
+        comments.map((c) =>
+          c._id === commentId ? data.comment : c
+        )
+      );
+    } catch (err) {
+      console.error('Error approving comment:', err);
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  const handleReject = async (commentId) => {
+    try {
+      const response = await fetch(
+        `/api/admin/comments/${commentId}/reject`,
+        { method: 'PUT' }
+      );
+
+      if (!response.ok) throw new Error('Failed to reject comment');
+
+      const data = await response.json();
+      setComments(
+        comments.map((c) =>
+          c._id === commentId ? data.comment : c
+        )
+      );
+    } catch (err) {
+      console.error('Error rejecting comment:', err);
+      alert(`Error: ${err.message}`);
     }
   };
 
@@ -182,6 +236,9 @@ export default function CommentsPanel({ videoId, userId }) {
               onDelete={handleDelete}
               userId={userId}
               videoId={videoId}
+              userRole={userRole}
+              onApprove={handleApprove}
+              onReject={handleReject}
             />
           ))}
         </div>

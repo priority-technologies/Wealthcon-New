@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Trash2, Check, X } from 'lucide-react';
 
 export default function Comment({
   comment,
@@ -9,7 +9,10 @@ export default function Comment({
   onReply,
   onDelete,
   userId,
-  videoId
+  videoId,
+  userRole,
+  onApprove,
+  onReject
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyText, setReplyText] = useState('');
@@ -42,7 +45,20 @@ export default function Comment({
     }
   };
 
+  const handleApprove = async () => {
+    if (onApprove) {
+      await onApprove(comment._id);
+    }
+  };
+
+  const handleReject = async () => {
+    if (onReject) {
+      await onReject(comment._id);
+    }
+  };
+
   const canDelete = userId === comment.userId?._id || userId === comment.userId;
+  const isAdmin = userRole === 'admin' || userRole === 'superAdmin';
 
   return (
     <div className="mb-4">
@@ -55,12 +71,42 @@ export default function Comment({
         />
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="font-semibold text-white">{comment.authorName}</span>
             {comment.status === 'pending' && (
               <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded">
                 Pending approval
               </span>
+            )}
+            {comment.status === 'approved' && (
+              <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
+                Approved
+              </span>
+            )}
+            {comment.status === 'rejected' && (
+              <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded">
+                Rejected
+              </span>
+            )}
+
+            {/* Admin approval/rejection buttons */}
+            {isAdmin && comment.status === 'pending' && (
+              <div className="flex gap-2 ml-auto">
+                <button
+                  onClick={handleApprove}
+                  className="flex items-center gap-1 px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded text-xs transition-colors"
+                >
+                  <Check size={14} />
+                  Approve
+                </button>
+                <button
+                  onClick={handleReject}
+                  className="flex items-center gap-1 px-2 py-1 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded text-xs transition-colors"
+                >
+                  <X size={14} />
+                  Reject
+                </button>
+              </div>
             )}
           </div>
 

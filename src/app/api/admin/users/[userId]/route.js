@@ -2,6 +2,7 @@ import watchHistory from "@/schemas/WatchHistory";
 import connectToDatabase from "../../../../../_database/mongodb";
 import Users from "../../../../../schemas/Users";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function POST(request, { params }) {
   try {
@@ -218,6 +219,22 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request) {
   try {
+    // Extract token from cookies
+    const token = request.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "No token provided" }, { status: 401 });
+    }
+
+    // Verify token and get user role
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    const loggedUserRole = decoded.role;
+
+    // Check if the user has proper access
+    if (loggedUserRole !== "admin" && loggedUserRole !== "superAdmin") {
+      return NextResponse.json({ message: "Access denied" }, { status: 401 });
+    }
+
     const { userIds } = await request.json();
 
     if (!Array.isArray(userIds) || userIds.length === 0) {
@@ -226,6 +243,8 @@ export async function DELETE(request) {
         { status: 400 }
       );
     }
+
+    await connectToDatabase();
 
     const deletionResults = await Users.deleteMany({ _id: { $in: userIds } });
 

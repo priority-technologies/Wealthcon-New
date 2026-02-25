@@ -3,7 +3,7 @@
 import React, { useEffect, useContext, useState, useCallback } from "react";
 import NotesCard from "../Card/NotesCard";
 import PageLoading from "../Loading/PageLoading";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import axios from "axios";
 import Pagination from "../Pagination";
 import { useRouter } from "next/navigation";

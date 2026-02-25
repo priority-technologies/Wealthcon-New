@@ -14,7 +14,7 @@ export async function GET() {
       .limit(1);
 
     return NextResponse.json(
-      `${process.env.AWS_CLOUDFRONT_URL}/${images?.[0]?.filename}`
+      `/uploads/bg-images/${images?.[0]?.filename}`
     );
   } catch (error) {
     console.error("Fetch error:", error);

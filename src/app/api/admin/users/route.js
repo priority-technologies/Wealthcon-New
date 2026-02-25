@@ -1,10 +1,20 @@
 import connectToDatabase from "../../../../_database/mongodb";
 import Users from "../../../../schemas/Users";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function GET(request) {
   try {
-    const loggedUserRole = request.headers.get("x-user-role");
+    // Extract token from cookies
+    const token = request.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ message: "No token provided" }, { status: 401 });
+    }
+
+    // Verify token and get user role
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
+    const loggedUserRole = decoded.role;
 
     // Check if the user has proper access
     if (loggedUserRole !== "admin" && loggedUserRole !== "superAdmin") {

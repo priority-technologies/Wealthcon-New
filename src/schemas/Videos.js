@@ -81,6 +81,29 @@ const videoSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    conversionStatus: {
+      type: String,
+      enum: ['pending', 'converting', 'completed', 'failed'],
+      default: 'pending',
+    },
+    conversionProgress: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    hlsUrl: {
+      type: String,
+      default: null,
+    },
+    conversionAttempts: {
+      type: Number,
+      default: 0,
+    },
+    conversionError: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,

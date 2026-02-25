@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Share2, Clock } from 'lucide-react';
+import { ArrowLeft, Plus, Share2, Clock, Check } from 'lucide-react';
 import Link from 'next/link';
 import CommentsPanel from '@/components/UserContent/CommentsPanel';
 import HLSVideoPlayer from '@/components/UserContent/HLSVideoPlayer';
@@ -14,8 +14,11 @@ export default function VideoDetailPage({ params: { videoId } }) {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [watchHistory, setWatchHistory] = useState(null);
   const [videoRef, setVideoRef] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [savingToList, setSavingToList] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -35,8 +38,12 @@ export default function VideoDetailPage({ params: { videoId } }) {
       if (response.ok) {
         const data = await response.json();
         const id = data.user?._id || data.user?.id || data._id || data.id;
+        const role = data.user?.role || data.role;
         if (id) {
           setUserId(id);
+        }
+        if (role) {
+          setUserRole(role);
         }
       } else {
         console.log('Auth response not ok:', response.status);
@@ -80,7 +87,9 @@ export default function VideoDetailPage({ params: { videoId } }) {
       if (!response.ok) throw new Error('Video not found');
 
       const data = await response.json();
-      setVideo(data.video || data);
+      const videoData = data.video || data;
+      setVideo(videoData);
+      setIsSaved(videoData.savedLater || false);
 
       // Fetch related videos
       const relatedResponse = await fetch(`/api/videos/${videoId}/related`);
@@ -93,6 +102,40 @@ export default function VideoDetailPage({ params: { videoId } }) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleSavedStatus = async () => {
+    if (!userId) {
+      alert('Please log in to save videos');
+      return;
+    }
+
+    setSavingToList(true);
+    try {
+      const action = isSaved ? 'remove' : 'add';
+      const response = await fetch('/api/watch-later', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId,
+        },
+        body: JSON.stringify({
+          videoId,
+          action,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update saved status');
+      }
+
+      setIsSaved(!isSaved);
+    } catch (err) {
+      console.error('Error toggling saved status:', err);
+      alert('Failed to update saved status. Please try again.');
+    } finally {
+      setSavingToList(false);
     }
   };
 
@@ -191,13 +234,34 @@ export default function VideoDetailPage({ params: { videoId } }) {
                 </div>
               </div>
               <div className="flex space-x-3 mt-4 md:mt-0 flex-shrink-0">
-                <button className="flex items-center bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
-                  <Plus size={20} className="mr-2" /> My List
+                <button
+                  onClick={toggleSavedStatus}
+                  disabled={savingToList}
+                  className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                    isSaved
+                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
+                  }`}
+                >
+                  {isSaved ? (
+                    <>
+                      <Check size={20} className="mr-2" /> Saved
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={20} className="mr-2" /> My List
+                    </>
+                  )}
                 </button>
                 <button className="flex items-center bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
                   <Share2 size={18} className="mr-2" /> Share
                 </button>
               </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="mt-8">
+              <CommentsPanel videoId={videoId} userId={userId} userRole={userRole} />
             </div>
 
             {/* Tabs */}
@@ -224,16 +288,6 @@ export default function VideoDetailPage({ params: { videoId } }) {
                   >
                     Resources
                   </button>
-                  <button
-                    onClick={() => setActiveTab('comments')}
-                    className={`${
-                      activeTab === 'comments'
-                        ? 'border-wc-cyan text-wc-cyan'
-                        : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
-                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg`}
-                  >
-                    Comments
-                  </button>
                 </nav>
               </div>
               <div className="py-6">
@@ -246,9 +300,6 @@ export default function VideoDetailPage({ params: { videoId } }) {
                   <div>
                     <p className="text-gray-400">Downloadable resources will appear here.</p>
                   </div>
-                )}
-                {activeTab === 'comments' && (
-                  <CommentsPanel videoId={videoId} userId={userId} />
                 )}
               </div>
             </div>

@@ -30,8 +30,8 @@ export async function GET(request, { params }) {
     const newNote = note.toObject()
     return NextResponse.json({
       ...newNote,
-      thumbnail: newNote.thumbnailFileName ? `${process.env.AWS_CLOUDFRONT_URL}/${newNote.thumbnailFileName}` : "",
-      noteUrl: `${process.env.AWS_CLOUDFRONT_URL}/${newNote.noteFileName}`,
+      thumbnail: newNote.thumbnailFileName ? `/uploads/thumbnails/${newNote.thumbnailFileName}` : "",
+      noteUrl: `/uploads/notes/${newNote.noteFileName}`,
     });
 
   } catch (error) {

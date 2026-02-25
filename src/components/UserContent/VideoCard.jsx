@@ -3,13 +3,20 @@
 import React from 'react';
 import { Play } from 'lucide-react';
 
-const VideoCard = ({ item, isRow = false }) => {
+const VideoCard = ({ item, isRow = false, rank = null }) => {
   if (!item) return null;
 
   const cardWidth = isRow ? 'w-80' : 'w-full';
 
   return (
     <div className={`group relative flex-shrink-0 ${cardWidth} rounded-lg overflow-hidden shadow-lg cursor-pointer transition-transform hover:scale-105 hover:z-10`}>
+      {/* Ranking Badge */}
+      {rank && (
+        <div className="absolute top-3 left-3 z-20 bg-cyan-500 text-black font-black text-2xl rounded-full w-12 h-12 flex items-center justify-center">
+          {rank}
+        </div>
+      )}
+
       <div className="relative aspect-video">
         <img
           src={item.thumbnail || '/placeholder.png'}
