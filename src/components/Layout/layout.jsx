@@ -19,7 +19,7 @@ import Link from "next/link";
 import Header from "../Header/Header";
 import { Fragment, useContext, useState } from "react";
 import { usePathname } from "next/navigation";
-import { UserContext } from "../../app/_context/User";
+import { UserContext } from "@/app/_context/User";
 import Announcement from "../Modal/Announcement";
 import usePreventActions from "@/hooks/usePreventActions";
 
