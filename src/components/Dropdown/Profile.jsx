@@ -102,13 +102,15 @@ const Profile = ({ title, className, profileImage, position, ...rest }) => {
             </Link>
           </li>
           <li>
-            <Link
-              href="#"
-              onClick={handleLogout}
-              className="text-base-100 text-sm font-medium"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+              className="text-base-100 text-sm font-medium w-full text-left"
             >
               Logout
-            </Link>
+            </button>
           </li>
         </ul>
       </div>

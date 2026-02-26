@@ -37,11 +37,22 @@ export default function ChannelsManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Get auth info from session/cookies
+      const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
+      const axiosConfig = {
+        headers: {
+          'x-user-id': userId,
+          'x-user-role': userRole,
+        },
+      };
+
       if (editingChannel) {
-        await axios.put(`/api/admin/channels/${editingChannel._id}`, formData);
+        await axios.put(`/api/admin/channels/${editingChannel._id}`, formData, axiosConfig);
         alert('Channel updated successfully!');
       } else {
-        await axios.post('/api/admin/channels', formData);
+        await axios.post('/api/admin/channels', formData, axiosConfig);
         alert('Channel created successfully!');
       }
       setFormData({ name: '', description: '', educatorName: '', profilePicture: '' });

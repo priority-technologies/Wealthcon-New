@@ -64,12 +64,6 @@ export default function Comment({
     <div className="mb-4">
       {/* Main Comment */}
       <div className="flex gap-3 p-3 bg-white/5 rounded-lg">
-        <img
-          src={comment.authorAvatar || 'https://i.pravatar.cc/150?u=default'}
-          alt={comment.authorName}
-          className="w-10 h-10 rounded-full flex-shrink-0"
-        />
-
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="font-semibold text-white">{comment.authorName}</span>
