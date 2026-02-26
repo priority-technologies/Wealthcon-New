@@ -31,6 +31,18 @@ services:
     networks:
       - wealthcon-network
 
+  # Redis (for BullMQ job queue)
+  redis:
+    image: redis:7-alpine
+    container_name: wealthcon-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - wealthcon-network
+    command: redis-server --appendonly yes
+
   # Next.js application
   app:
     image: node:20-alpine
@@ -50,10 +62,12 @@ services:
     depends_on:
       - mongodb
       - localstack
+      - redis
     command: npm run dev
 
 volumes:
   mongodb_data:
+  redis_data:
   wealthcon-uploads:
 
 networks:
