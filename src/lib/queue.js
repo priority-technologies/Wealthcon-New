@@ -5,14 +5,18 @@ import Videos from '@/schemas/Videos';
 import { convertToHLSAdaptive, cleanupHLS } from '@/utils/hlsConverter';
 import path from 'path';
 
-// Use in-memory storage instead of Redis
-// For production, replace with Redis connection
-const queueConfig = {
-  connection: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379,
-  },
-};
+// Redis connection configuration
+// Priority: REDIS_URL > separate REDIS_HOST/REDIS_PORT
+const queueConfig = process.env.REDIS_URL
+  ? {
+      connection: process.env.REDIS_URL,
+    }
+  : {
+      connection: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: process.env.REDIS_PORT || 6379,
+      },
+    };
 
 // Create conversion queue
 export const conversionQueue = new Queue('video-conversion', {
