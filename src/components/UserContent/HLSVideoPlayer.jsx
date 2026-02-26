@@ -89,10 +89,6 @@ export default function HLSVideoPlayer({
             bufferingGoal: 8, // 8 second buffer goal
             rebufferingGoal: 4, // 4 second rebuffering goal
             bufferBehind: 30, // Keep 30 seconds behind
-            jumpLargeGaps: true,
-            smallGapLimit: 0.5,
-            // Bandwidth detection for quality selection
-            preferredAudioLanguage: 'en',
           },
         };
 
