@@ -149,8 +149,17 @@ export default function LiveSessionSingleVideo({ videoId, admin }) {
   const fetchVideosViewUser = async (pageNum) => {
     pageNum === 1 && setViewLoading(true);
     try {
+      const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+      const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+
       const res = await axios.get(
-        `/api/admin/videos/${videoId}/view?page=${pageNum}`
+        `/api/admin/videos/${videoId}/view?page=${pageNum}`,
+        {
+          headers: {
+            'x-user-id': userId,
+            'x-user-role': userRole,
+          },
+        }
       );
       if (res.status === 200) {
         if (pageNum === 1) {
