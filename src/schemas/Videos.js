@@ -33,7 +33,8 @@ const videoSchema = new mongoose.Schema(
       trim: true,
       validate: {
         validator: function (v) {
-          return /^https?:\/\/.+\..+/.test(v);
+          // Accept both absolute URLs and relative paths
+          return /^(https?:\/\/.+\..+|\/uploads\/.+)/.test(v);
         },
         message: (props) => `${props.value} is not a valid URL for a video!`,
       },

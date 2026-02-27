@@ -16,7 +16,19 @@ function Home() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/videos/categories');
+      // Get user ID and role from storage for auth headers
+      const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') || sessionStorage.getItem('userId') : null;
+      const userRole = typeof window !== 'undefined' ? localStorage.getItem('userRole') || sessionStorage.getItem('userRole') : null;
+
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add auth headers if user is logged in
+      if (userId) headers['x-user-id'] = userId;
+      if (userRole) headers['x-user-role'] = userRole;
+
+      const response = await fetch('/api/videos/categories', { headers });
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }

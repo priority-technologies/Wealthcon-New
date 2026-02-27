@@ -6,6 +6,16 @@ import mongoose from "mongoose";
 
 export async function GET(request, { params: { videoId } }) {
   try {
+    // Check authorization - only admins can view analytics
+    const userRole = request.headers.get("x-user-role");
+
+    if (userRole !== "admin" && userRole !== "superAdmin") {
+      return NextResponse.json(
+        { error: "Access denied. Admin only." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
 
     // Get all watch history entries for this video

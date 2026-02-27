@@ -2,6 +2,7 @@ import connectToDatabase from "../../../../_database/mongodb";
 import Users from "../../../../schemas/Users";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 export async function GET(request) {
   try {
@@ -97,22 +98,32 @@ export async function PUT(request) {
     }
 
     if (email) {
-      if (user.email !== email) {
+      // Check if email already exists for another user
+      const existingEmail = await Users.findOne({
+        _id: { $ne: user._id },
+        email,
+      });
+
+      if (existingEmail) {
         return NextResponse.json(
-          { error: "Email not updated" },
-          { status: 400 }
+          { error: "Email already in use" },
+          { status: 409 }
         );
       }
+      user.email = email;
     }
 
     if (currentPassword && newPassword) {
-      if (user.password !== currentPassword) {
+      // Use bcrypt to compare hashed password
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordValid) {
         return NextResponse.json(
           { error: "Current password is incorrect" },
           { status: 401 }
         );
       }
-      user.password = newPassword;
+      // Hash new password before storing
+      user.password = await bcrypt.hash(newPassword, 10);
     }
 
     if (profilePicture) {

@@ -206,12 +206,32 @@ export default function VideoDetailPage({ params: { videoId } }) {
               )}
               <HLSVideoPlayer
                 videoUrl={video.videoUrl}
-                resumeTime={watchHistory?.watchedDuration ? parseInt(watchHistory.watchedDuration) * 60 : undefined}
-                onTimeUpdate={(currentTime) => {
-                  console.log('Video progress:', currentTime);
+                resumeTime={watchHistory?.watchedDuration ? parseInt(watchHistory.watchedDuration) : 0}
+                onTimeUpdate={async (currentTime) => {
+                  // Save watch progress to backend
+                  try {
+                    await fetch('/api/videos/progress', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'x-user-id': userId,
+                      },
+                      body: JSON.stringify({
+                        videoId,
+                        watchedDuration: Math.floor(currentTime), // Store as seconds
+                        videoDuration: video.videoDuration,
+                      }),
+                    });
+                  } catch (err) {
+                    console.error('Failed to save watch progress:', err);
+                  }
                 }}
                 onPlayPause={(isPlaying) => {
-                  console.log('Playing:', isPlaying);
+                  if (isPlaying) {
+                    console.log('Video playing');
+                  } else {
+                    console.log('Video paused');
+                  }
                 }}
                 className="mb-6"
               />

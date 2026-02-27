@@ -32,15 +32,19 @@ export async function POST(request) {
     const history = await watchHistory.findOneAndUpdate(
       { userId, videoId },
       {
-        watchedDuration,
+        watchedDuration, // Store seconds watched
         videoDuration: isExistVideo.videoDuration,
-        lastWatchedAt: watchedDuration,
+        lastWatchedAt: new Date(), // Store current timestamp, not duration
         updatedAt: new Date(),
       },
       { new: true, upsert: true }
     );
 
-    return NextResponse.json({ data: null });
+    return NextResponse.json({
+      success: true,
+      data: history,
+      message: "Watch progress saved successfully",
+    });
   } catch (error) {
     console.error("Error fetching videos:", error.message);
     return NextResponse.json(

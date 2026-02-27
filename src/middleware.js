@@ -5,24 +5,37 @@ export function middleware(request) {
   // Get token from cookies
   const token = request.cookies.get('token')?.value;
 
-  const response = NextResponse.next();
-
   if (token) {
     try {
       // Verify and decode the token
       const decoded = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
 
-      // Set headers for API routes to use
-      // In Next.js 14, we need to set on request headers before cloning
-      response.headers.set('x-user-id', decoded.id);
-      response.headers.set('x-user-role', decoded.role);
-      response.headers.set('x-user-email', decoded.email);
+      // Clone request and set headers on the request object
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-user-id', decoded.id);
+      requestHeaders.set('x-user-role', decoded.role);
+      requestHeaders.set('x-user-email', decoded.email);
+
+      // Create new request with updated headers
+      const response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+
+      return response;
     } catch (error) {
       console.error('JWT verification error:', error.message);
+      // Return 401 Unauthorized response on token verification failure
+      return NextResponse.json(
+        { error: 'Invalid or expired token' },
+        { status: 401 }
+      );
     }
   }
 
-  return response;
+  // No token provided - continue without auth headers
+  return NextResponse.next();
 }
 
 // Apply middleware to all routes

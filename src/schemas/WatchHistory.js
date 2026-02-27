@@ -12,9 +12,9 @@ const watchHistorySchema = new mongoose.Schema(
       ref: "Videos",
       required: true,
     },
-    watchedDuration: { type: Number, default: 0 }, 
-    videoDuration: { type: Number },
-    lastWatchedAt: { type: Number, default: 0 },
+    watchedDuration: { type: Number, default: 0 },  // Seconds watched
+    videoDuration: { type: Number },                // Total video duration in seconds
+    lastWatchedAt: { type: Date, default: Date.now }, // When user last watched
     updatedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
