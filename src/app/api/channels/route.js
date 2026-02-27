@@ -4,6 +4,15 @@ import connectToDatabase from "../../../_database/mongodb";
 
 export async function GET(request) {
   try {
+    // Require authentication
+    const userId = request.headers.get("x-user-id");
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     await connectToDatabase();
 
     const channels = await Channel.find({ isActive: true })

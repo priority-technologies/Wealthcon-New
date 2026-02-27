@@ -3,12 +3,21 @@ import Quote from "@/schemas/Quotes";
 import connectToDatabase from "@/_database/mongodb";
 
 export async function GET(request) {
-  const currentPage =
-    parseInt(request.nextUrl?.searchParams.get("page"), 10) || 1;
-  const pageSize = Number(process.env.NEXT_PUBLIC_ITEM_PER_PAGE);
-  const skipCount = (currentPage - 1) * pageSize;
-
   try {
+    // Require authentication
+    const userId = request.headers.get("x-user-id");
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const currentPage =
+      parseInt(request.nextUrl?.searchParams.get("page"), 10) || 1;
+    const pageSize = Number(process.env.NEXT_PUBLIC_ITEM_PER_PAGE);
+    const skipCount = (currentPage - 1) * pageSize;
+
     await connectToDatabase();
 
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);

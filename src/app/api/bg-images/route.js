@@ -4,8 +4,17 @@ import { NextResponse } from "next/server";
 import BgImage from "@/schemas/BgImage";
 import connectToDatabase from "@/_database/mongodb";
 
-export async function GET() {
+export async function GET(request) {
   try {
+    // Require authentication
+    const userId = request.headers.get("x-user-id");
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
     await connectToDatabase();
 
     const images = await BgImage.find()
@@ -13,9 +22,10 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .limit(1);
 
-    return NextResponse.json(
-      `/uploads/bg-images/${images?.[0]?.filename}`
-    );
+    return NextResponse.json({
+      success: true,
+      imageUrl: `/uploads/bg-images/${images?.[0]?.filename}`,
+    });
   } catch (error) {
     console.error("Fetch error:", error);
     return NextResponse.json(

@@ -1,42 +1,65 @@
 import connectToDatabase from "@/_database/mongodb";
 import { NextResponse } from "next/server";
+import Videos from "@/schemas/Videos";
+import { adminRoles } from "@/helpers/constant";
+import mongoose from "mongoose";
 
 export async function GET(request) {
   try {
-    // Connect to the database
-    const mongoose = await connectToDatabase();
-    const db = mongoose.connection.db;
+    // Require authentication for live sessions
+    const loggedUserRole = request.headers.get("x-user-role");
+    const loggedUserId = request.headers.get("x-user-id");
 
-    const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get("limit")) || 100;
-    const skip = parseInt(searchParams.get("skip")) || 0;
-
-    const collections = await db.listCollections().toArray();
-    const databaseExport = {};
-
-    for (const collection of collections) {
-      const collectionName = collection.name;
-      const documents = await db
-        .collection(collectionName)
-        .find({})
-        .skip(skip)
-        .limit(limit)
-        .toArray();
-      databaseExport[collectionName] = documents;
+    if (!loggedUserId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
     }
 
-    const jsonContent = JSON.stringify(databaseExport, null, 2);
+    await connectToDatabase();
 
-    return new NextResponse(jsonContent, {
-      headers: {
-        "Content-Type": "application/json",
-        "Content-Disposition": `attachment; filename=database-export-${skip}-${skip + limit}.json`,
-      },
+    const { searchParams } = new URL(request.url);
+    const currentPage = parseInt(searchParams.get("page"), 10) || 1;
+    const pageSize = Number(process.env.NEXT_PUBLIC_ITEM_PER_PAGE) || 10;
+    const skipCount = (currentPage - 1) * pageSize;
+
+    // Get role-based content access
+    const roles =
+      loggedUserRole === "admin" || loggedUserRole === "superAdmin"
+        ? adminRoles
+        : loggedUserRole
+        ? ["all", loggedUserRole]
+        : ["all"];
+
+    // Fetch live session videos (videoCategory: "live")
+    const [videos, totalCount] = await Promise.all([
+      Videos.find({
+        videoCategory: "live",
+        studentCategory: { $in: roles },
+      })
+        .select("_id title description thumbnail videoDuration viewCount")
+        .sort({ createdAt: -1 })
+        .skip(skipCount)
+        .limit(pageSize)
+        .lean(),
+      Videos.countDocuments({
+        videoCategory: "live",
+        studentCategory: { $in: roles },
+      }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      videos,
+      totalCount,
+      currentPage,
+      totalPages: Math.ceil(totalCount / pageSize),
     });
   } catch (error) {
-    console.error("Error exporting database:", error.message);
+    console.error("Error fetching live sessions:", error.message);
     return NextResponse.json(
-      { error: "Failed to export database. Please try again later." },
+      { error: "Failed to fetch live sessions" },
       { status: 500 }
     );
   }
